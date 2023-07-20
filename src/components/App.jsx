@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { Redirect, Route, Switch } from 'react-router-dom';
+import React from 'react';
+import { Navigate, Route, Routes } from 'react-router-dom';
 import * as duckAuth from '../duckAuth.js';
-import { getToken } from '../utils/token.js';
 import Ducks from './Ducks';
 import Login from './Login';
 import MyProfile from './MyProfile';
@@ -11,7 +10,7 @@ import './styles/App.css';
 import { withRouter } from './withRouter.jsx'
 
 class App extends React.Component {
-  constructor(props){
+  constructor(props) {
     super(props);
     this.state = {
       loggedIn: false
@@ -33,11 +32,11 @@ class App extends React.Component {
   }
 
   tokenCheck = () => {
-    const { location } = this.props;
-    if (localStorage.getItem('jwt')){
+    // const { location } = this.props;
+    if (localStorage.getItem('jwt')) {
       let jwt = localStorage.getItem('jwt');
       duckAuth.getContent(jwt).then((res) => {
-        if (res){
+        if (res) {
           let userData = {
             username: res.username,
             email: res.email
@@ -46,28 +45,27 @@ class App extends React.Component {
             loggedIn: true,
             userData
           }, () => {
-            this.props.navigate(location.path);
+            this.props.navigate('/');
           });
         }
       });
     }
   }
 
-  render(){
+  render() {
     return (
-      <Switch>
-        <ProtectedRoute path="/ducks" loggedIn={this.state.loggedIn} component={Ducks} />
-        <ProtectedRoute path="/my-profile" loggedIn={this.state.loggedIn} userData={this.state.userData} component={MyProfile} />
-        <Route path="/login">
+      <Routes>
+        <Route path='/ducks' element={<ProtectedRoute loggedIn={this.state.loggedIn} component={Ducks} />} />
+        <Route path="/my-profile" element={<ProtectedRoute loggedIn={this.state.loggedIn} userData={this.state.userData} component={MyProfile} />} />
+        <Route path="/login" element={
           <div className="loginContainer">
             <Login handleLogin={this.handleLogin} tokenCheck={this.tokenCheck} />
-          </div>
-        </Route>
-        <Route path="/register" component={() => import('./Register')}/>
-        <Route>
-          {this.state.loggedIn ? <Redirect to="/ducks" /> : <Redirect to="/login" />}
-        </Route>
-      </Switch>
+          </div>} />
+        <Route path="/register" element={
+          <Register />
+        } />
+        <Route path="*" element={!this.state.loggedIn ? <Navigate to="/ducks" /> : <Navigate to="/login" />}/>
+      </Routes>
     )
   }
 }

@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import { setToken } from '../utils/token';
 import Logo from './Logo';
 import * as duckAuth from '../duckAuth.js';
 import './styles/Login.css';
+import { withRouter } from './withRouter'
 
 class Login extends React.Component {
   constructor(props){
@@ -82,4 +82,4 @@ class Login extends React.Component {
   }
 }
 
-export default Login;
+export default withRouter(Login);

@@ -1,5 +1,5 @@
 import React from 'react';
-import LogoDuck from '../images/logo.png';
+import LogoDuck from '../resources/logo.png';
 import './styles/Logo.css';
 
 function Logo (props) {
