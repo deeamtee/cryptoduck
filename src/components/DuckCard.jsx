@@ -4,7 +4,6 @@ import { ducks } from '../resources/images';
 
 function DuckCard (props) {
   let { duck }  = props;
-  console.log(duck)
   return (
     <div className="duck-card">
       <div className="duck-card__image">
