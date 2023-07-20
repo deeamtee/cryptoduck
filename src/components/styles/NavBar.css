@@ -17,6 +17,7 @@
   color: #02FF00;
   margin-left: 24px;
   text-decoration: none;
+  cursor: pointer;
 }
 .navbar__button {
   background-color: black;

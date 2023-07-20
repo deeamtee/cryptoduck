@@ -1,10 +1,10 @@
 import NavBar from './NavBar';
 import DuckList from './DuckList';
 
-function Ducks () {
+function Ducks ({onSignOut}) {
   return (
     <>
-      <NavBar />
+      <NavBar onSignOut={onSignOut} />
       <DuckList />
     </>
   )

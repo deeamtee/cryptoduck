@@ -1,85 +1,78 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import Logo from './Logo';
-import * as duckAuth from '../duckAuth.js';
 import './styles/Login.css';
-import { withRouter } from './withRouter'
 
-class Login extends React.Component {
-  constructor(props){
-    super(props);
-    this.state = {
-      username: '',
-      password: '',
-      message: ''
-    }
-    this.handleChange = this.handleChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
+function Login({ onLogin }) {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [message, setMessage] = useState('');
+  const navigate = useNavigate();
 
-  }
+  const resetForm = () => {
+    setUsername('');
+    setPassword('');
+    setMessage('');
+  };
 
-  handleChange(e) {
-    const {name, value} = e.target;
-    this.setState({
-      [name]: value
-    });
-  }
-
-  handleSubmit(e){
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!this.state.username || !this.state.password){
-      return;
+
+    onLogin({ username, password })
+      .then(resetForm)
+      .then(() => navigate('/ducks'))
+      .catch((err) => setMessage(err.message || 'Что-то пошло не так'));
+  };
+
+  useEffect(() => {
+    if (localStorage.getItem('jwt')) {
+      navigate('/ducks');
     }
-    duckAuth.authorize(this.state.username, this.state.password)
-    .then((data) => {
-      if (!data){
-        return this.setState({
-          message: 'Что-то пошло не так!'
-        });
-      }
-      if (data.jwt){
-        this.setState({email: '', password: '', message: ''} ,() => {
-        this.props.handleLogin(data.user);
-        this.props.navigate('/ducks');
-        return;
-        })
-      }
-    })
-    .catch(err => console.log(err));
-  }
+  }, []);
 
-  render(){
-    return(
-      <div onSubmit={this.handleSubmit} className="login">
-        <Logo title={'CryptoDucks'}/>
-        <p className="login__welcome">
-          Это приложение содержит конфиденциальную информацию.
-          Пожалуйста, войдите или зарегистрируйтесь, чтобы получить доступ к CryptoDucks.
-        </p>
-        <p className="login__error">
-          {this.state.message}
-        </p>
-        <form className="login__form">
-          <label htmlFor="username">
-            Логин:
-          </label>
-          <input id="username" required name="username" type="text" value={this.state.username} onChange={this.handleChange} />
-          <label htmlFor="password">
-            Пароль:
-          </label>
-          <input id="password" required name="password" type="password" value={this.state.password} onChange={this.handleChange} />
-          <div className="login__button-container">
-            <button type="submit" className="login__link">Войти</button>
-          </div>
-        </form>
-
-        <div className="login__signup">
-          <p>Ещё не зарегистрированы?</p>
-          <Link to="/register" className="signup__link">Зарегистрироваться</Link>
+  return(
+    <div className="login">
+      <Logo title={'CryptoDucks'}/>
+      <p className="login__welcome">
+        Это приложение содержит конфиденциальную информацию. 
+        Пожалуйста, войдите или зарегистрируйтесь, чтобы получить доступ к CryptoDucks.
+      </p>
+      <p className="login__error">
+        {message}
+      </p>
+      <form className="login__form" onSubmit={handleSubmit}>
+        <label htmlFor="username">
+          Логин:
+        </label>
+        <input
+          id="username"
+          required
+          name="username"
+          type="text"
+          value={username}
+          onChange={e => setUsername(e.target.value)}
+        />
+        <label htmlFor="password">
+          Пароль:
+        </label>
+        <input
+          id="password"
+          required
+          name="password"
+          type="password"
+          value={password}
+          onChange={e => setPassword(e.target.value)}
+        />
+        <div className="login__button-container">
+          <button type="submit" className="login__link">Войти</button>
         </div>
+      </form>
+      <div className="login__signup">
+        <p>Ещё не зарегистрированы?</p>
+        <Link to="/register" className="signup__link">Зарегистрироваться</Link>
       </div>
-    )
-  }
+    </div>
+  );
 }
 
-export default withRouter(Login);
+export default Login;

@@ -1,11 +1,12 @@
 import NavBar from './NavBar';
 import './styles/MyProfile.css';
 
-function MyProfile ({ userData = {} }) {
+function MyProfile ({ userData = {}, onSignOut }) {
   const { username, email} = userData;
+
   return (
     <>
-      <NavBar />
+      <NavBar onSignOut={onSignOut} />
       <div className="my-profile">
         <div className="my-profile__container">
           <div className="my-profile__header">
